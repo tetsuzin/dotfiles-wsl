@@ -1,9 +1,0 @@
-# https://github.com/jonmosco/kube-ps1
-KUBECTX_PATH="${HOME}/.nix-profile/share/kube-ps1"
-if [[ -d "${KUBECTX_PATH}" ]]; then
-  source ${KUBECTX_PATH}/kube-ps1.sh
-  PS1='[\u@\h \W $(kube_ps1)]\$ '
-fi
-
-# WSL2 から Windows 側の SSH エージェントを利用するための設定
-eval "$(~/.ssh/wsl2-ssh-agent)"
