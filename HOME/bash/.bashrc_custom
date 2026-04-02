@@ -6,4 +6,4 @@ if [[ -d "${KUBECTX_PATH}" ]]; then
 fi
 
 # WSL2 から Windows 側の SSH エージェントを利用するための設定
-eval "$(.ssh/wsl2-ssh-agent)"
+eval "$(~/.ssh/wsl2-ssh-agent)"
