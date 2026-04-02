@@ -60,7 +60,5 @@
 	required = true
 
 [credential]
-	helper = "/mnt/c/Users/tetsuzin/scoop/apps/git/current/mingw64/bin/git-credential-manager.exe"
-
-[includeif "gitdir:~/github/dotfiles/"]
-	path = .gitconfig.local
+	helper =
+	helper = !gh auth git-credential
