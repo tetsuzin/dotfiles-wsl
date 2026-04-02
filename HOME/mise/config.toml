@@ -1,0 +1,14 @@
+[tools]
+
+# Language
+dotnet = ["8", "10"]
+go = "latest"
+node = "latest"
+python = "3"
+
+# Tools
+bat = "latest"
+fzf = "latest"
+ghq = "latest"
+lazygit = "latest"
+shfmt = "latest"
