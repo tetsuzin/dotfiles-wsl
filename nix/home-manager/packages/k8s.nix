@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  kube-ps1 = pkgs.stdenv.mkDerivation {
+  kube-ps1 = pkgs.stdenvNoCC.mkDerivation {
     name = "kube-ps1";
     src = pkgs.fetchgit {
       url = "https://github.com/jonmosco/kube-ps1";

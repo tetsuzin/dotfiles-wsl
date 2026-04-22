@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# dotnet tools でインストールしたツールにパスを通す
+export PATH="$HOME/.dotnet/tools:$PATH"
+
+# Windows 側の Docker に接続する
+export DOCKER_HOST="tcp://localhost:2375"
