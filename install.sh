@@ -25,7 +25,9 @@ if [ "${_DEBUG}" = "true" ]; then
   set -x
 fi
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
+NIX_DIR="${SCRIPT_DIR}/nix"
 
 dry_run_cmd=""
 if [[ $_DRY_RUN == "true" ]]; then
@@ -33,7 +35,9 @@ if [[ $_DRY_RUN == "true" ]]; then
 fi
 
 # 変数の表示
+log "SCRIPT_DIR: ${SCRIPT_DIR}"
 log "DOTFILES_DIR: ${DOTFILES_DIR}"
+log "NIX_DIR: ${NIX_DIR}"
 log "USER: ${USER}"
 
 log ""
@@ -51,19 +55,36 @@ fi
 
 log ""
 log "==> home-manager の実行"
+
 if command -v home-manager &>/dev/null; then
 
-  nix flake update --flake "${DOTFILES_DIR}"
+  nix flake update --flake "${NIX_DIR}"
 
   if [[ "${_DRY_RUN}" == "true" ]]; then
-    home-manager switch --flake "${DOTFILES_DIR}#${USER}" --dry-run
+    home-manager switch --flake "${NIX_DIR}#${USER}" --dry-run
   else
-    home-manager switch --flake "${DOTFILES_DIR}#${USER}"
+    home-manager switch --flake "${NIX_DIR}#${USER}"
   fi
 
 else
   log "    nix run home-manager switch を実行します..."
-  nix run home-manager/master -- switch --flake "${DOTFILES_DIR}#${USER}" -b backup
+  nix run home-manager/master -- switch --flake "${NIX_DIR}#${USER}" -b backup
+fi
+
+# home-manager によってインストールされたパッケージをパスに反映する
+if [ -e "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+  # shellcheck disable=SC1091
+  source "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh"
+fi
+
+log ""
+log "==> DotfilesLinker の実行"
+
+export DOTFILES_ROOT="${DOTFILES_DIR}"
+if [[ "${_DRY_RUN}" == "true" ]]; then
+  DotfilesLinker --dry-run
+else
+  DotfilesLinker
 fi
 
 log ""

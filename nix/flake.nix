@@ -2,7 +2,7 @@
   description = "Home Manager configuration of tetsuzin";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,7 +19,7 @@
     {
       homeConfigurations.${user} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        modules = [ ./nix/home-manager/_main.nix ];
+        modules = [ ./home-manager/_main.nix ];
         extraSpecialArgs = { inherit user; };
       };
     };

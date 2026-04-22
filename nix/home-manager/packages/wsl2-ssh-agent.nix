@@ -1,17 +1,16 @@
 { pkgs, ... }:
 
 let
-  wsl2-ssh-agent = pkgs.stdenv.mkDerivation {
+  wsl2-ssh-agent = pkgs.stdenvNoCC.mkDerivation rec {
     name = "wsl2-ssh-agent";
+    version = "0.9.7";
     src = pkgs.fetchurl {
-      url = "https://github.com/mame/wsl2-ssh-agent/releases/download/v0.9.7/wsl2-ssh-agent";
+      url = "https://github.com/mame/wsl2-ssh-agent/releases/download/v${version}/wsl2-ssh-agent";
       hash = "sha256-KBxk9geVmN4aRVKS1TPzriGDeYCj0wEgdLwUrWlTJdg=";
     };
     dontUnpack = true;
     installPhase = ''
-      mkdir -p $out/bin
-      cp -v $src $out/bin/wsl2-ssh-agent
-      chmod +x $out/bin/wsl2-ssh-agent
+      install -Dm755 $src $out/bin/wsl2-ssh-agent
     '';
   };
 in
