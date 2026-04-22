@@ -1,4 +1,4 @@
-format = '\[$username@$hostname $directory$dotnet$kubernetes\]$line_break$character'
+format = '\[$username@$hostname $os $directory$dotnet$kubernetes\]$line_break$character'
 
 [username]
 style_user = "yellow"
@@ -11,6 +11,17 @@ show_always = true
 disabled = false
 ssh_only = false
 format = "[$hostname](blue)"
+
+[os]
+disabled = false
+style = "fg:green"
+format = "[$symbol]($style) "
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+Macos = "󰀵"
+Linux = "󰌽"
 
 [directory]
 style = "cyan bold"
@@ -30,9 +41,9 @@ format = '\([$symbol($version )($tfm )]($style)\)'
 
 [kubernetes]
 disabled = false
-symbol = " "
+symbol = ""
 # symbol = "⎈"
-format = '\([$symbol](blue)|[$context](red):[$namespace](cyan)\)'
+format = '\([$symbol](blue) |[$context](red):[$namespace](cyan)\)'
 
 [line_break]
 disabled = false

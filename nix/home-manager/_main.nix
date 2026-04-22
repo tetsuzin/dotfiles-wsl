@@ -1,46 +1,48 @@
-{ config, user, ... }:
+{ config, user, pkgs, ... }:
 
 let
-  homeDir = ../../HOME;
+  dotfilesDir = ../../dotfiles/HOME;
   wslHostDir = "/mnt/c/Users/${user}";
-  dotfilesDir = "/home/${user}/github/dotfiles/HOME";
   mkLink = config.lib.file.mkOutOfStoreSymlink;
 in {
   imports = [
-    ./packages.nix
-    ./k8s.nix
-    ./wsl2-ssh-agent.nix
+    ./packages/packages.nix
+    ./themes/themes.nix
   ];
 
   home.username = user;
-  home.homeDirectory = "/home/${user}";
   home.stateVersion = "26.05";
+  home.homeDirectory = "/home/${user}";
 
   home.file = {
-    # nix 管理下のファイルにパスを貼る
-    ".ssh/config".source = mkLink "${dotfilesDir}/ssh/config";
-
-    # XDG Base Directory Specification に準拠する設定ファイルの配置
-    ".config/starship.toml".source = mkLink "${dotfilesDir}/.config/starship.toml";
-    ".config/git/config".source = mkLink "${dotfilesDir}/.config/git/config";
-    ".config/mise/config.toml".source = mkLink "${dotfilesDir}/.config/mise/config.toml";
-    ".config/act/actrc".source = mkLink "${dotfilesDir}/.config/act/actrc";
-
     # ホスト側のファイルとディレクトリにパスを貼る
-    # ".ssh/wsl2-ssh-agent".source = mkLink "${wslHostDir}/.ssh/wsl2-ssh-agent";
     ".aws/credentials".source = mkLink "${wslHostDir}/.aws/credentials";
     ".kube/config".source = mkLink "${wslHostDir}/.kube/config";
   };
 
   programs.home-manager.enable = true;
 
-  programs.bash = {
+  programs.mise = {
     enable = true;
-    initExtra =
-      "#.baserc_base\n" + builtins.readFile "${homeDir}/bash/.bashrc_base"
-      + "\n" +
-      "#.bashrc_custom\n" + builtins.readFile "${homeDir}/bash/.bashrc_custom";
+    enableBashIntegration = false;
   };
 
-  programs.mise.enable = true;
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+    initExtra = builtins.readFile "${dotfilesDir}/.bashrc_base" + ''
+
+      # mise を有効化
+      eval "$(${pkgs.mise}/bin/mise activate bash)"
+
+      # ユーザのカスタム設定を読み込む
+      source ~/.bashrc_custom
+    '';
+
+    profileExtra = ''
+      # ユーザのカスタム設定を読み込む
+      source ~/.bash_profile_custom
+    '';
+  };
+
 }

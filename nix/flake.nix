@@ -19,7 +19,7 @@
     {
       homeConfigurations.${user} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        modules = [ ./nix/home-manager/_main.nix ];
+        modules = [ ./home-manager/_main.nix ];
         extraSpecialArgs = { inherit user; };
       };
     };
