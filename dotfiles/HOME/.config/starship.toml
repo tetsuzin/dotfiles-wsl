@@ -37,7 +37,7 @@ error_symbol = "[>_](red)"
 
 [dotnet]
 disabled = false
-format = '\([$symbol($version )($tfm )]($style)\)'
+format = '\([$symbol($version)($tfm)]($style)\)'
 
 [kubernetes]
 disabled = false
