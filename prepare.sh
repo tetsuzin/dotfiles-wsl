@@ -16,6 +16,15 @@ function update_apt() {
   packages=(
     libatomic1
   )
+
+  # Ubuntu バージョンに応じた libicu パッケージを追加
+  ubuntu_version=$(lsb_release -rs)
+  if [[ "${ubuntu_version}" == 26.* ]]; then
+    packages+=(libicu78)
+  elif [[ "${ubuntu_version}" == 24.* ]]; then
+    packages+=(libicu74)
+  fi
+
   sudo apt update -y
   sudo apt upgrade -y
   sudo apt-get install -y "${packages[@]}"
