@@ -21,7 +21,7 @@
     eza
     zoxide
     shfmt
-    fastfetchMinimal
+    fastfetch.minimal
     lazygit
     fzf
     bat
