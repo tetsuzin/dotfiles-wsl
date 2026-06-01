@@ -18,7 +18,6 @@ in {
     # ホスト側のファイルとディレクトリにパスを貼る
     ".aws/credentials".source = mkLink "${wslHostDir}/.aws/credentials";
     ".kube/config".source = mkLink "${wslHostDir}/.kube/config";
-    ".ssh/config".source = mkLink "${wslHostDir}/.ssh/config";
   };
 
   programs.home-manager.enable = true;
