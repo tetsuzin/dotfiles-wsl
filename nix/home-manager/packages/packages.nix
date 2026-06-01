@@ -23,6 +23,7 @@
     shfmt
     fastfetch.minimal
     lazygit
+    yazi
     fzf
     bat
     ghq
