@@ -15,6 +15,7 @@
     wget
     eclint
     jq
+    neovim
     docker-client
     act
     starship
