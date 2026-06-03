@@ -24,6 +24,11 @@ if command -v dotnet &> /dev/null; then
 
 fi
 
+# zoxide の有効化
+if command -v zoxide &> /dev/null; then
+  eval "$(zoxide init bash)"
+fi
+
 # Statship の有効化
 if command -v starship &> /dev/null; then
   eval "$(starship init bash)"
