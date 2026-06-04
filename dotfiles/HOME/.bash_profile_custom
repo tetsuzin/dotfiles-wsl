@@ -10,3 +10,5 @@ export PATH="$HOME/common_scripts:$PATH"
 
 # Windows 側の Docker に接続する
 export DOCKER_HOST="tcp://localhost:2375"
+
+export PATH="~/common_scripts/:$PATH"
