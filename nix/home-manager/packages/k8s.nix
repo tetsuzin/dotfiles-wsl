@@ -6,7 +6,7 @@ let
     src = pkgs.fetchgit {
       url = "https://github.com/jonmosco/kube-ps1";
       rev = "HEAD";
-      hash = "sha256-uq/0G8Ko+WBQDTCyRuAkrfOIpFCREKQIiIFu6hjIISU=";
+      hash = "sha256-6li6p3NHqwufje7L5Jkxx8yvz8VqpnwCEjweduvXosQ=";
     };
     installPhase = ''
       mkdir -p $out/share/kube-ps1
