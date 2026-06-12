@@ -31,7 +31,7 @@
     btop
 
     # AWS
-    awscli
+    awscli2
     aws-vault
   ];
 }
