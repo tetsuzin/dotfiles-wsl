@@ -22,7 +22,7 @@
     eza
     zoxide
     shfmt
-    fastfetch.minimal
+    fastfetch-unwrapped
     lazygit
     yazi
     fzf
