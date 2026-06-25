@@ -13,6 +13,7 @@
     gh
     curl
     wget
+    nh
     eclint
     jq
     neovim
