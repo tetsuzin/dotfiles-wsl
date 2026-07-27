@@ -15,6 +15,7 @@ function update_apt() {
   # apt でインストールするパッケージ
   packages=(
     libatomic1
+    openssh-server
   )
 
   # Ubuntu バージョンに応じた libicu パッケージを追加
