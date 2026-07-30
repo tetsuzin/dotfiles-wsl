@@ -30,6 +30,7 @@
     bat
     ghq
     btop
+    herdr
 
     # AWS
     awscli2
