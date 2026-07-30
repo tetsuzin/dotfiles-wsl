@@ -1,24 +1,10 @@
 { config, pkgs, ... }:
 
 let
-  kube-ps1 = pkgs.stdenvNoCC.mkDerivation {
-    name = "kube-ps1";
-    src = pkgs.fetchgit {
-      url = "https://github.com/jonmosco/kube-ps1";
-      rev = "HEAD";
-      hash = "sha256-6li6p3NHqwufje7L5Jkxx8yvz8VqpnwCEjweduvXosQ=";
-    };
-    installPhase = ''
-      mkdir -p $out/share/kube-ps1
-      cp kube-ps1.sh $out/share/kube-ps1/
-    '';
-  };
-
   # K8s関連パッケージ
   k8sPackages = with pkgs; [
     kubectl
     kubectx
-    kube-ps1
     krew
   ];
 

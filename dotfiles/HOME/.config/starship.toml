@@ -41,6 +41,7 @@ format = '\([$symbol($version)($tfm)]($style)\)'
 
 [kubernetes]
 disabled = false
+detect_env_vars = ["STARSHIP_KUBERNETES_ENABLED"]
 symbol = ""
 # symbol = "⎈"
 format = '\([$symbol](blue) |[$context](red):[$namespace](cyan)\)'
