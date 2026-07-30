@@ -11,14 +11,15 @@ function initialize_bashrc() {
   fi
 }
 
-function update_apt() {
+function install_apt_packages() {
   # apt でインストールするパッケージ
-  packages=(
+  local -a packages=(
     libatomic1
     openssh-server
   )
 
   # Ubuntu バージョンに応じた libicu パッケージを追加
+  local ubuntu_version
   ubuntu_version=$(lsb_release -rs)
   if [[ "${ubuntu_version}" == 26.* ]]; then
     packages+=(libicu78)
@@ -26,10 +27,8 @@ function update_apt() {
     packages+=(libicu74)
   fi
 
-  sudo apt update -y
-  sudo apt upgrade -y
+  sudo apt-get update
   sudo apt-get install -y "${packages[@]}"
-  sudo apt autoremove -y
 }
 
 echo "========================================"
@@ -39,6 +38,6 @@ initialize_bashrc
 
 echo ""
 echo "========================================"
-echo "update apt-get packages"
+echo "install apt packages"
 echo "========================================"
-update_apt
+install_apt_packages
