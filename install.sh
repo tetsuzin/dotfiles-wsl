@@ -84,6 +84,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
 NIX_DIR="${SCRIPT_DIR}/nix"
+flake_attr="${NIX_DIR}#homeConfigurations.${USER}.activationPackage"
 
 # 変数の表示
 log "SCRIPT_DIR: ${SCRIPT_DIR}"
@@ -112,19 +113,19 @@ fi
 log ""
 log "==> home-manager の実行"
 
-if command -v home-manager &>/dev/null; then
-
-  run nix flake update --flake "${NIX_DIR}"
-
-  if [[ "${dry_run}" == "true" ]]; then
-    home-manager switch --flake "${NIX_DIR}#${USER}" --dry-run
-  else
-    home-manager switch --flake "${NIX_DIR}#${USER}"
-  fi
-
+if [[ "${dry_run}" == "true" ]] && ! command -v nix &>/dev/null; then
+  run nix build --no-update-lock-file --dry-run "${flake_attr}"
+elif [[ "${dry_run}" == "true" ]]; then
+  nix build --no-update-lock-file --dry-run "${flake_attr}"
 else
-  log "    nix run home-manager switch を実行します..."
-  run nix run home-manager/master -- switch --flake "${NIX_DIR}#${USER}" -b backup
+  activation_package="$(
+    nix build \
+      --no-update-lock-file \
+      --no-link \
+      --print-out-paths \
+      "${flake_attr}"
+  )"
+  HOME_MANAGER_BACKUP_EXT=backup "${activation_package}/activate"
 fi
 
 # home-manager によってインストールされたパッケージをパスに反映する
