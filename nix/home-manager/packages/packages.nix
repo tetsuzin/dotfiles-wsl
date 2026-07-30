@@ -4,7 +4,6 @@
   imports = [
     ./dotfiles-linker.nix
     ./k8s.nix
-    ./wsl2-ssh-agent.nix
   ];
 
   home.packages = with pkgs; [
@@ -13,6 +12,7 @@
     gh
     curl
     wget
+    wsl2-ssh-agent
     nh
     eclint
     jq
@@ -35,4 +35,7 @@
     awscli2
     aws-vault
   ];
+
+  # シンボリックリンクを貼っておく
+  home.file.".ssh/wsl2-ssh-agent".source = "${pkgs.wsl2-ssh-agent}/bin/wsl2-ssh-agent";
 }
