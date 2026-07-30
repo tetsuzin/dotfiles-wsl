@@ -31,6 +31,16 @@ fi
 
 # Statship の有効化
 if command -v starship &> /dev/null; then
+  export STARSHIP_KUBERNETES_ENABLED=1
+
+  kubeon() {
+    export STARSHIP_KUBERNETES_ENABLED=1
+  }
+
+  kubeoff() {
+    unset STARSHIP_KUBERNETES_ENABLED
+  }
+
   eval "$(starship init bash)"
 fi
 
