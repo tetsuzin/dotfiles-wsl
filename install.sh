@@ -5,34 +5,85 @@ function log() {
   echo "[setup] $*"
 }
 
-# 引数のパース
+function fail() {
+  log "ERROR: $*" >&2
+  exit 1
+}
+
+function usage() {
+  cat <<'EOF'
+Usage: install.sh [--debug[=true|false]] [--dry-run[=true|false]]
+EOF
+}
+
+function run() {
+  if [[ "${dry_run}" == "true" ]]; then
+    printf '[dry-run]'
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+debug=false
+dry_run=false
+
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --debug) _DEBUG=$2; shift 2;;
-    --dry-run) _DRY_RUN=$2; shift 2;;
-    *) shift ;;
+    --debug)
+      debug=true
+      if [[ "${2:-}" == "true" || "${2:-}" == "false" ]]; then
+        debug=$2
+        shift
+      fi
+      shift
+      ;;
+    --debug=*)
+      debug="${1#*=}"
+      shift
+      ;;
+    --dry-run)
+      dry_run=true
+      if [[ "${2:-}" == "true" || "${2:-}" == "false" ]]; then
+        dry_run=$2
+        shift
+      fi
+      shift
+      ;;
+    --dry-run=*)
+      dry_run="${1#*=}"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      fail "不明な引数です: $1"
+      ;;
   esac
 done
+
+[[ "${debug}" == "true" || "${debug}" == "false" ]] ||
+  fail "--debug には true または false を指定してください"
+[[ "${dry_run}" == "true" || "${dry_run}" == "false" ]] ||
+  fail "--dry-run には true または false を指定してください"
 
 USER="${SUDO_USER:-$(whoami)}"
 
 # 受けとった引数を表示
-log "--debug=${_DEBUG:="false"}"
-log "--dry-run=${_DRY_RUN:="false"}"
+log "--debug=${debug}"
+log "--dry-run=${dry_run}"
 
 # デバッグ出力の有効化
-if [ "${_DEBUG}" = "true" ]; then
+if [[ "${debug}" == "true" ]]; then
   set -x
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
 NIX_DIR="${SCRIPT_DIR}/nix"
-
-dry_run_cmd=""
-if [[ $_DRY_RUN == "true" ]]; then
-  dry_run_cmd="echo $*"
-fi
 
 # 変数の表示
 log "SCRIPT_DIR: ${SCRIPT_DIR}"
@@ -44,10 +95,15 @@ log ""
 log "==> Lix のインストール確認"
 if ! command -v nix &>/dev/null; then
   log "    Lix をインストールします..."
-  $dry_run_cmd curl -sSf -L https://install.lix.systems/lix | sh -s -- install --no-confirm
-  if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+  if [[ "${dry_run}" == "true" ]]; then
+    log "    [dry-run] curl https://install.lix.systems/lix | sh -s -- install --no-confirm"
+  else
+    curl -sSf -L https://install.lix.systems/lix |
+      sh -s -- install --no-confirm
+  fi
+  if [[ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
     # shellcheck disable=SC1091
-    $dry_run_cmd source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    run source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
   fi
 else
   log "    Lix はインストール済みです: $(nix --version)"
@@ -58,9 +114,9 @@ log "==> home-manager の実行"
 
 if command -v home-manager &>/dev/null; then
 
-  nix flake update --flake "${NIX_DIR}"
+  run nix flake update --flake "${NIX_DIR}"
 
-  if [[ "${_DRY_RUN}" == "true" ]]; then
+  if [[ "${dry_run}" == "true" ]]; then
     home-manager switch --flake "${NIX_DIR}#${USER}" --dry-run
   else
     home-manager switch --flake "${NIX_DIR}#${USER}"
@@ -68,20 +124,22 @@ if command -v home-manager &>/dev/null; then
 
 else
   log "    nix run home-manager switch を実行します..."
-  nix run home-manager/master -- switch --flake "${NIX_DIR}#${USER}" -b backup
+  run nix run home-manager/master -- switch --flake "${NIX_DIR}#${USER}" -b backup
 fi
 
 # home-manager によってインストールされたパッケージをパスに反映する
-if [ -e "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh" ]; then
+if [[ -e "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh" ]]; then
   # shellcheck disable=SC1091
-  source "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh"
+  run source "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh"
 fi
 
 log ""
 log "==> DotfilesLinker の実行"
 
 export DOTFILES_ROOT="${DOTFILES_DIR}"
-if [[ "${_DRY_RUN}" == "true" ]]; then
+if [[ "${dry_run}" == "true" ]] && ! command -v DotfilesLinker &>/dev/null; then
+  log "    [dry-run] DotfilesLinker --dry-run"
+elif [[ "${dry_run}" == "true" ]]; then
   DotfilesLinker --dry-run
 else
   DotfilesLinker
