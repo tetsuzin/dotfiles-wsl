@@ -1,0 +1,36 @@
+name: Update flake.lock
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 毎週月曜日 09:00 JST（cron は UTC）
+    - cron: "0 0 * * 1"
+
+permissions: {}
+
+concurrency:
+  group: update-flake-lock
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Update Nix flake inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@a0fee77b2a98bb7c5c0ed7ae6d6ad4903dbdad0d # v2026-05-15
+
+      - name: Update flake.lock
+        uses: DeterminateSystems/update-flake-lock@834c491b2ece4de0bbd00d85214bb5e83b4da5c6 # v28
+        with:
+          path-to-flake-dir: nix/
+          commit-msg: "update flake.lock"
+          pr-title: "Update flake.lock"
