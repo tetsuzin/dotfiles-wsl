@@ -70,7 +70,10 @@ done
 [[ "${dry_run}" == "true" || "${dry_run}" == "false" ]] ||
   fail "--dry-run には true または false を指定してください"
 
-USER="${SUDO_USER:-$(whoami)}"
+[[ "${EUID}" -ne 0 ]] ||
+  fail "root では実行しないでください。通常ユーザーで実行してください"
+
+user="$(id -un)"
 
 # 受けとった引数を表示
 log "--debug=${debug}"
@@ -84,13 +87,13 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
 NIX_DIR="${SCRIPT_DIR}/nix"
-flake_attr="${NIX_DIR}#homeConfigurations.${USER}.activationPackage"
+flake_attr="${NIX_DIR}#homeConfigurations.${user}.activationPackage"
 
 # 変数の表示
 log "SCRIPT_DIR: ${SCRIPT_DIR}"
 log "DOTFILES_DIR: ${DOTFILES_DIR}"
 log "NIX_DIR: ${NIX_DIR}"
-log "USER: ${USER}"
+log "USER: ${user}"
 
 log ""
 log "==> Lix のインストール確認"
