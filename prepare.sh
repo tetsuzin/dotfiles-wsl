@@ -1,44 +1,77 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
-
-function initialize_bashrc() {
-  if [ -f "/etc/skel/.bashrc" ]; then
-    echo "/etc/skel/.bashrc -> ${DOTFILES_DIR}/HOME/.bashrc_base"
-    cat "/etc/skel/.bashrc" > "${DOTFILES_DIR}/HOME/.bashrc_base"
-  fi
+function log() {
+  echo "[prepare] $*"
 }
 
-function update_apt() {
-  # apt でインストールするパッケージ
-  packages=(
+function fail() {
+  log "ERROR: $*" >&2
+  exit 1
+}
+
+function install_system_packages() {
+  local -a packages=(
+    ca-certificates
+    curl
     libatomic1
     openssh-server
   )
 
-  # Ubuntu バージョンに応じた libicu パッケージを追加
-  ubuntu_version=$(lsb_release -rs)
-  if [[ "${ubuntu_version}" == 26.* ]]; then
-    packages+=(libicu78)
-  elif [[ "${ubuntu_version}" == 24.* ]]; then
-    packages+=(libicu74)
-  fi
+  case "${VERSION_ID}" in
+    24.*) packages+=(libicu74) ;;
+    26.*) packages+=(libicu78) ;;
+    *) fail "未対応の Ubuntu バージョンです: ${VERSION_ID}" ;;
+  esac
 
-  sudo apt update -y
-  sudo apt upgrade -y
+  log "==> システムパッケージのインストール"
+  sudo apt-get update
   sudo apt-get install -y "${packages[@]}"
-  sudo apt autoremove -y
 }
 
-echo "========================================"
-echo "initialize .bashrc"
-echo "========================================"
-initialize_bashrc
+function install_lix() {
+  local nix_version
+  local nix_version_output
 
-echo ""
-echo "========================================"
-echo "update apt-get packages"
-echo "========================================"
-update_apt
+  if command -v nix &>/dev/null; then
+    nix_version_output="$(nix --version)"
+    nix_version="${nix_version_output%%$'\n'*}"
+    [[ "${nix_version_output}" == *Lix* ]] ||
+      fail "Lix 以外の Nix がインストールされています: ${nix_version}"
+    log "==> Lix はインストール済みです: ${nix_version}"
+    return
+  fi
+
+  log "==> Lix のインストール"
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.lix.systems/lix |
+    sh -s -- install --no-confirm
+
+  if [[ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
+    # shellcheck disable=SC1091
+    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  fi
+
+  command -v nix &>/dev/null ||
+    fail "Lix をPATHに反映できませんでした。シェルを開き直して再実行してください"
+
+  nix_version_output="$(nix --version)"
+  nix_version="${nix_version_output%%$'\n'*}"
+  [[ "${nix_version_output}" == *Lix* ]] ||
+    fail "Lix のインストールを確認できませんでした: ${nix_version}"
+}
+
+[[ "${EUID}" -ne 0 ]] ||
+  fail "root では実行しないでください。必要な処理ではスクリプト内から sudo を使用します"
+
+[[ -r /etc/os-release ]] || fail "/etc/os-release を読み込めません"
+# shellcheck disable=SC1091
+source /etc/os-release
+[[ "${ID}" == "ubuntu" ]] || fail "Ubuntu 以外の環境には対応していません: ${ID}"
+
+command -v sudo &>/dev/null || fail "sudo が必要です"
+
+install_system_packages
+install_lix
+
+log "==> ホストの準備が完了しました"
+log "    続けて install.sh を実行してください"
