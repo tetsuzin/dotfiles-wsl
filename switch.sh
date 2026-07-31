@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function log() {
-  echo "[install] $*"
+  echo "[switch] $*"
 }
 
 function fail() {
@@ -12,7 +12,7 @@ function fail() {
 
 function usage() {
   cat <<'EOF'
-Usage: install.sh [--debug[=true|false]] [--dry-run[=true|false]] [--update[=true|false]]
+Usage: switch.sh [--debug[=true|false]] [--dry-run[=true|false]] [--update[=true|false]]
 EOF
 }
 
