@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-function log() {
-  echo "[switch] $*"
-}
-
-function fail() {
-  log "ERROR: $*" >&2
-  exit 1
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/scripts/_functions"
 
 function usage() {
   cat <<'EOF'
@@ -77,9 +72,10 @@ done
 [[ "${dry_run}" != "true" || "${update}" != "true" ]] ||
   fail "--dry-run と --update は同時に指定できません"
 
-log "--debug=${debug}"
-log "--dry-run=${dry_run}"
-log "--update=${update}"
+LOG_DEBUG="${debug}"
+log_debug "--debug=${debug}"
+log_debug "--dry-run=${dry_run}"
+log_debug "--update=${update}"
 
 if [[ "${debug}" == "true" ]]; then
   set -x
@@ -96,27 +92,26 @@ nix_version="${nix_version_output%%$'\n'*}"
 [[ "${nix_version_output}" == *Lix* ]] ||
   fail "Lix 以外の Nix が使用されています: ${nix_version}"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
 NIX_DIR="${SCRIPT_DIR}/nix"
 user="$(id -un)"
 flake_attr="${NIX_DIR}#homeConfigurations.${user}.activationPackage"
 
 # 変数の表示
-log "SCRIPT_DIR: ${SCRIPT_DIR}"
-log "DOTFILES_DIR: ${DOTFILES_DIR}"
-log "NIX_DIR: ${NIX_DIR}"
-log "USER: ${user}"
-log "LIX: ${nix_version}"
+log_debug "SCRIPT_DIR: ${SCRIPT_DIR}"
+log_debug "DOTFILES_DIR: ${DOTFILES_DIR}"
+log_debug "NIX_DIR: ${NIX_DIR}"
+log_debug "USER: ${user}"
+log_debug "LIX: ${nix_version}"
 
 if [[ "${update}" == "true" ]]; then
-  log ""
-  log "==> flake.lock の更新"
+  echo
+  log_step "flake.lock の更新"
   nix flake update --flake "${NIX_DIR}"
 fi
 
-log ""
-log "==> home-manager の実行"
+echo
+log_step "home-manager の実行"
 
 if [[ "${dry_run}" == "true" ]]; then
   nix build --no-update-lock-file --dry-run "${flake_attr}"
@@ -138,12 +133,12 @@ if [[ "${dry_run}" != "true" &&
   source "${HOME}/.nix-profile/etc/profile.d/hm-session-vars.sh"
 fi
 
-log ""
-log "==> DotfilesLinker の実行"
+echo
+log_step "DotfilesLinker の実行"
 
 export DOTFILES_ROOT="${DOTFILES_DIR}"
 if [[ "${dry_run}" == "true" ]] && ! command -v DotfilesLinker &>/dev/null; then
-  log "    DotfilesLinker は home-manager 適用後に利用可能になるためスキップします"
+  log_warning "DotfilesLinker は home-manager 適用後に利用可能になるためスキップします"
 elif [[ "${dry_run}" == "true" ]]; then
   DotfilesLinker --dry-run
 else
@@ -152,7 +147,7 @@ else
   DotfilesLinker
 fi
 
-log ""
-log "==> セットアップ完了"
-log "    新しいシェルを起動するか、以下を実行してください:"
-log "    exec bash"
+echo
+log_step "セットアップ完了"
+log_info "新しいシェルを起動するか、以下を実行してください:"
+log_info "exec bash"

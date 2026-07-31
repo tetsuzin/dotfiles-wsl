@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-function log() {
-  echo "[prepare] $*"
-}
-
-function fail() {
-  log "ERROR: $*" >&2
-  exit 1
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/scripts/_functions"
 
 function install_system_packages() {
   local -a packages=(
@@ -25,7 +20,7 @@ function install_system_packages() {
     *) fail "未対応の Ubuntu バージョンです: ${VERSION_ID}" ;;
   esac
 
-  log "==> システムパッケージのインストール"
+  log_step "システムパッケージのインストール"
   sudo apt-get update
   sudo apt-get install -y "${packages[@]}"
 }
@@ -39,11 +34,11 @@ function install_lix() {
     nix_version="${nix_version_output%%$'\n'*}"
     [[ "${nix_version_output}" == *Lix* ]] ||
       fail "Lix 以外の Nix がインストールされています: ${nix_version}"
-    log "==> Lix はインストール済みです: ${nix_version}"
+    log_info "Lix はインストール済みです: ${nix_version}"
     return
   fi
 
-  log "==> Lix のインストール"
+  log_step "Lix のインストール"
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.lix.systems/lix |
     sh -s -- install --no-confirm
 
@@ -74,5 +69,5 @@ command -v sudo &>/dev/null || fail "sudo が必要です"
 install_system_packages
 install_lix
 
-log "==> ホストの準備が完了しました"
-log "    続けて switch.sh を実行してください"
+log_step "ホストの準備が完了しました"
+log_info "続けて switch.sh を実行してください"
