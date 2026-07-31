@@ -75,4 +75,4 @@ install_system_packages
 install_lix
 
 log "==> ホストの準備が完了しました"
-log "    続けて install.sh を実行してください"
+log "    続けて switch.sh を実行してください"
