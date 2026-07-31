@@ -7,6 +7,7 @@ let
 in {
   imports = [
     ./packages/packages.nix
+    ./plugins/lazyvim.nix
     ./themes/themes.nix
   ];
 

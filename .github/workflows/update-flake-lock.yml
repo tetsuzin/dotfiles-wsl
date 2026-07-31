@@ -16,7 +16,7 @@ jobs:
   update:
     name: Update Nix flake inputs
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     permissions:
       contents: write
       issues: write
@@ -25,10 +25,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            nix/flake.nix
-            nix/flake.lock
+            nix/
+            dotfiles/
 
       - name: Install Lix
         uses: samueldr/lix-gha-installer-action@a0fee77b2a98bb7c5c0ed7ae6d6ad4903dbdad0d # v2026-05-15
@@ -39,3 +38,10 @@ jobs:
           path-to-flake-dir: nix/
           commit-msg: "update flake.lock"
           pr-title: "Update flake.lock"
+
+      - name: Validate Home Manager configuration
+        run: >
+          nix build
+          --no-update-lock-file
+          --no-link
+          ./nix#homeConfigurations.tetsuzin.activationPackage
