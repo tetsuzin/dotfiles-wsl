@@ -12,12 +12,13 @@ function fail() {
 
 function usage() {
   cat <<'EOF'
-Usage: install.sh [--debug[=true|false]] [--dry-run[=true|false]]
+Usage: install.sh [--debug[=true|false]] [--dry-run[=true|false]] [--update[=true|false]]
 EOF
 }
 
 debug=false
 dry_run=false
+update=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -45,6 +46,18 @@ while [[ $# -gt 0 ]]; do
       dry_run="${1#*=}"
       shift
       ;;
+    --update)
+      update=true
+      if [[ "${2:-}" == "true" || "${2:-}" == "false" ]]; then
+        update=$2
+        shift
+      fi
+      shift
+      ;;
+    --update=*)
+      update="${1#*=}"
+      shift
+      ;;
     -h|--help)
       usage
       exit 0
@@ -59,9 +72,14 @@ done
   fail "--debug には true または false を指定してください"
 [[ "${dry_run}" == "true" || "${dry_run}" == "false" ]] ||
   fail "--dry-run には true または false を指定してください"
+[[ "${update}" == "true" || "${update}" == "false" ]] ||
+  fail "--update には true または false を指定してください"
+[[ "${dry_run}" != "true" || "${update}" != "true" ]] ||
+  fail "--dry-run と --update は同時に指定できません"
 
 log "--debug=${debug}"
 log "--dry-run=${dry_run}"
+log "--update=${update}"
 
 if [[ "${debug}" == "true" ]]; then
   set -x
@@ -90,6 +108,12 @@ log "DOTFILES_DIR: ${DOTFILES_DIR}"
 log "NIX_DIR: ${NIX_DIR}"
 log "USER: ${user}"
 log "LIX: ${nix_version}"
+
+if [[ "${update}" == "true" ]]; then
+  log ""
+  log "==> flake.lock の更新"
+  nix flake update --flake "${NIX_DIR}"
+fi
 
 log ""
 log "==> home-manager の実行"
