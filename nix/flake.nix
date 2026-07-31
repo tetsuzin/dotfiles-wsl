@@ -7,10 +7,24 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ezaThemes = {
+      url = "github:eza-community/eza-themes";
+      flake = false;
+    };
+    lazyvimStarter = {
+      url = "github:LazyVim/starter";
+      flake = false;
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    {
+      nixpkgs,
+      home-manager,
+      ezaThemes,
+      lazyvimStarter,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -20,7 +34,9 @@
       homeConfigurations.${user} = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [ ./home-manager/_main.nix ];
-        extraSpecialArgs = { inherit user; };
+        extraSpecialArgs = {
+          inherit user ezaThemes lazyvimStarter;
+        };
       };
     };
 }

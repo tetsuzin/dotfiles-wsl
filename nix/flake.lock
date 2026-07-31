@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "ezaThemes": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784485423,
+        "narHash": "sha256-53J0plgB+d6b4LzSwrCezmIhfVm7WZrKMA1ORGdUtQU=",
+        "owner": "eza-community",
+        "repo": "eza-themes",
+        "rev": "21184b55bfe34e8473c8160f9de0c03e4f76857f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "eza-community",
+        "repo": "eza-themes",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -17,6 +33,22 @@
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "lazyvimStarter": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1733936199,
+        "narHash": "sha256-QrpnlDD4r1X4C8PqBhQ+S3ar5C+qDrU1Jm/lPqyMIFM=",
+        "owner": "LazyVim",
+        "repo": "starter",
+        "rev": "803bc181d7c0d6d5eeba9274d9be49b287294d99",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LazyVim",
+        "repo": "starter",
         "type": "github"
       }
     },
@@ -38,7 +70,9 @@
     },
     "root": {
       "inputs": {
+        "ezaThemes": "ezaThemes",
         "home-manager": "home-manager",
+        "lazyvimStarter": "lazyvimStarter",
         "nixpkgs": "nixpkgs"
       }
     }
