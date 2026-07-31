@@ -16,6 +16,7 @@ function install_system_packages() {
     curl
     libatomic1
     openssh-server
+    clang
   )
 
   case "${VERSION_ID}" in
