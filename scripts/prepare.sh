@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
-source "${SCRIPT_DIR}/scripts/_functions"
+source "${SCRIPT_DIR}/_functions"
 
 function install_system_packages() {
   local -a packages=(
@@ -70,4 +70,4 @@ install_system_packages
 install_lix
 
 log_step "ホストの準備が完了しました"
-log_info "続けて switch.sh を実行してください"
+log_info "続けて ./setup switch を実行してください"

@@ -3,11 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
-source "${SCRIPT_DIR}/scripts/_functions"
+source "${SCRIPT_DIR}/_functions"
 
 function usage() {
   cat <<'EOF'
-Usage: switch.sh [--debug[=true|false]] [--dry-run[=true|false]] [--update[=true|false]]
+Usage: ./setup switch [--debug[=true|false]] [--dry-run[=true|false]] [--update[=true|false]]
 EOF
 }
 
@@ -72,6 +72,7 @@ done
 [[ "${dry_run}" != "true" || "${update}" != "true" ]] ||
   fail "--dry-run と --update は同時に指定できません"
 
+# shellcheck disable=SC2034 # _functions の log_debug が参照する
 LOG_DEBUG="${debug}"
 log_debug "--debug=${debug}"
 log_debug "--dry-run=${dry_run}"
@@ -82,18 +83,19 @@ if [[ "${debug}" == "true" ]]; then
 fi
 
 [[ "${EUID}" -ne 0 ]] ||
-  fail "root では実行しないでください。先に通常ユーザーで prepare.sh を実行してください"
+  fail "root では実行しないでください。先に通常ユーザーで ./setup prepare を実行してください"
 
 command -v nix &>/dev/null ||
-  fail "Lix が見つかりません。先に prepare.sh を実行してください"
+  fail "Lix が見つかりません。先に ./setup prepare を実行してください"
 
 nix_version_output="$(nix --version)"
 nix_version="${nix_version_output%%$'\n'*}"
 [[ "${nix_version_output}" == *Lix* ]] ||
   fail "Lix 以外の Nix が使用されています: ${nix_version}"
 
-DOTFILES_DIR="${SCRIPT_DIR}/dotfiles"
-NIX_DIR="${SCRIPT_DIR}/nix"
+REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+DOTFILES_DIR="${REPO_DIR}/dotfiles"
+NIX_DIR="${REPO_DIR}/nix"
 user="$(id -un)"
 flake_attr="${NIX_DIR}#homeConfigurations.${user}.activationPackage"
 
