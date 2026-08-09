@@ -7,7 +7,7 @@ source "${SCRIPT_DIR}/_functions"
 
 function usage() {
   cat <<'EOF'
-Usage: ./setup switch [--debug[=true|false]] [--dry-run[=true|false]] [--update[=true|false]]
+Usage: ./setup switch [--debug] [--dry-run] [--update]
 EOF
 }
 
@@ -17,42 +17,9 @@ update=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --debug)
-      debug=true
-      if [[ "${2:-}" == "true" || "${2:-}" == "false" ]]; then
-        debug=$2
-        shift
-      fi
-      shift
-      ;;
-    --debug=*)
-      debug="${1#*=}"
-      shift
-      ;;
-    --dry-run)
-      dry_run=true
-      if [[ "${2:-}" == "true" || "${2:-}" == "false" ]]; then
-        dry_run=$2
-        shift
-      fi
-      shift
-      ;;
-    --dry-run=*)
-      dry_run="${1#*=}"
-      shift
-      ;;
-    --update)
-      update=true
-      if [[ "${2:-}" == "true" || "${2:-}" == "false" ]]; then
-        update=$2
-        shift
-      fi
-      shift
-      ;;
-    --update=*)
-      update="${1#*=}"
-      shift
-      ;;
+    --debug) debug=true ;;
+    --dry-run) dry_run=true ;;
+    --update) update=true ;;
     -h|--help)
       usage
       exit 0
@@ -61,14 +28,9 @@ while [[ $# -gt 0 ]]; do
       fail "不明な引数です: $1"
       ;;
   esac
+  shift
 done
 
-[[ "${debug}" == "true" || "${debug}" == "false" ]] ||
-  fail "--debug には true または false を指定してください"
-[[ "${dry_run}" == "true" || "${dry_run}" == "false" ]] ||
-  fail "--dry-run には true または false を指定してください"
-[[ "${update}" == "true" || "${update}" == "false" ]] ||
-  fail "--update には true または false を指定してください"
 [[ "${dry_run}" != "true" || "${update}" != "true" ]] ||
   fail "--dry-run と --update は同時に指定できません"
 
