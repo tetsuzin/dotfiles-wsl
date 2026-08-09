@@ -1,4 +1,4 @@
-{ config, user, pkgs, ... }:
+{ config, user, pkgs, ezaThemes, lazyvimStarter, ... }:
 
 let
   dotfilesDir = ../../dotfiles/HOME;
@@ -7,8 +7,6 @@ let
 in {
   imports = [
     ./packages/packages.nix
-    ./plugins/lazyvim.nix
-    ./themes/themes.nix
   ];
 
   home.username = user;
@@ -19,6 +17,11 @@ in {
     # ホスト側のファイルとディレクトリにパスを貼る
     ".aws/credentials".source = mkLink "${wslHostDir}/.aws/credentials";
     ".kube/config".source = mkLink "${wslHostDir}/.kube/config";
+  };
+
+  xdg.configFile = {
+    "nvim/".source = "${lazyvimStarter}/";
+    "eza/theme.yaml".source = "${ezaThemes}/themes/tokyonight.yml";
   };
 
   programs.home-manager.enable = true;
