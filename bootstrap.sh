@@ -20,6 +20,9 @@ url="https://github.com/tetsuzin/ScriptCommandRunner/releases/download/${version
 work_dir="$(mktemp -d)"
 trap 'rm -rf "${work_dir}"' EXIT
 
+command -v curl &>/dev/null ||
+  fail "curl が必要です。sudo apt-get install -y curl ca-certificates を実行してください"
+
 log_step "ScriptCommandRunner ${version} (${rid}) のダウンロード"
 curl -fsSL "${url}" -o "${work_dir}/${archive}"
 
