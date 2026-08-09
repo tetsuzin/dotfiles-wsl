@@ -11,14 +11,6 @@ trim_trailing_whitespace = true
 [*.md]
 trim_trailing_whitespace = false
 
-[.gitconfig]
-end_of_line = lf
+[dotfiles/HOME/.config/git/config]
 indent_style = tab
-insert_final_newline = true
-tab_width = 4
-
-[HOME/git/.gitconfig*]
-end_of_line = lf
-indent_style = tab
-insert_final_newline = true
 tab_width = 4
