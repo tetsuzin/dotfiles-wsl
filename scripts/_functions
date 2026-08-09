@@ -29,7 +29,7 @@ function log_step() {
 }
 
 function log_debug() {
-  [[ "${LOG_DEBUG:-false}" == "true" ]] || return
+  [[ "${LOG_DEBUG:-false}" == "true" ]] || return 0
   _log "DEBUG" "${CYAN}" 1 "$@"
 }
 
