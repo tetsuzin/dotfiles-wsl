@@ -24,7 +24,7 @@ command -v curl &>/dev/null ||
   fail "curl が必要です。sudo apt-get install -y curl ca-certificates を実行してください"
 
 log_step "ScriptCommandRunner ${version} (${rid}) のダウンロード"
-curl -fsSL "${url}" -o "${work_dir}/${archive}"
+curl --proto '=https' --tlsv1.2 -fsSL "${url}" -o "${work_dir}/${archive}"
 
 log_step "チェックサムの検証"
 echo "${sha256}  ${work_dir}/${archive}" | sha256sum -c - >/dev/null ||
