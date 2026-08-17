@@ -58,7 +58,11 @@ case "${command}" in
     elif ! git -C "${os_dir}" pull --ff-only; then
       log_warning "os/${os_name} を更新できませんでした。現在の内容のまま続行します"
     fi
-    exec "${os_dir}/scripts/${command}.sh" "$@"
+    if [[ "${command}" == "switch" ]]; then
+      OS_DIR="${os_dir}" exec "${SCRIPT_DIR}/scripts/switch.sh" "$@"
+    else
+      exec "${os_dir}/scripts/${command}.sh" "$@"
+    fi
     ;;
   -h | --help)
     usage
