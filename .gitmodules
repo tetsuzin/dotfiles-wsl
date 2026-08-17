@@ -1,0 +1,6 @@
+[submodule "os/linux"]
+	path = os/linux
+	url = https://github.com/tetsuzin/dotfiles-linux.git
+[submodule "os/mac"]
+	path = os/mac
+	url = https://github.com/tetsuzin/dotfiles-mac.git

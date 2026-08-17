@@ -1,7 +1,0 @@
-[tools]
-claude = "latest"
-codex = "latest"
-dotnet = ["8", "10"]
-go = "latest"
-node = "latest"
-python = "3"
