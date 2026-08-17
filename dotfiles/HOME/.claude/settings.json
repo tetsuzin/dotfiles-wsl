@@ -1,0 +1,8 @@
+{
+  "autoUpdatesChannel": "latest",
+  "theme": "auto",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
+}
