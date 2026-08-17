@@ -69,4 +69,4 @@ install_system_packages
 install_lix
 
 log_step "ホストの準備が完了しました"
-log_info "続けて ./setup switch を実行してください"
+log_info "続けて ./setup.sh switch を実行してください"

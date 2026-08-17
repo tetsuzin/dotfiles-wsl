@@ -7,7 +7,7 @@ source "${SCRIPT_DIR}/_functions"
 
 function usage() {
   cat <<'EOF'
-Usage: ./setup switch [--debug] [--dry-run] [--update]
+Usage: ./setup.sh switch [--debug] [--dry-run] [--update]
 EOF
 }
 
@@ -45,10 +45,10 @@ if [[ "${debug}" == "true" ]]; then
 fi
 
 [[ "${EUID}" -ne 0 ]] ||
-  fail "root では実行しないでください。先に通常ユーザーで ./setup prepare を実行してください"
+  fail "root では実行しないでください。先に通常ユーザーで ./setup.sh prepare を実行してください"
 
 command -v nix &>/dev/null ||
-  fail "Lix が見つかりません。先に ./setup prepare を実行してください"
+  fail "Lix が見つかりません。先に ./setup.sh prepare を実行してください"
 
 nix_version_output="$(nix --version)"
 nix_version="${nix_version_output%%$'\n'*}"
