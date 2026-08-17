@@ -59,13 +59,21 @@ REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DOTFILES_DIR="${REPO_DIR}/dotfiles"
 NIX_DIR="${REPO_DIR}/nix"
 user="$(id -un)"
-flake_attr="${NIX_DIR}#homeConfigurations.${user}.activationPackage"
+
+# WSL では専用の home-manager 構成を使用する
+if grep -qi microsoft /proc/version 2>/dev/null; then
+  flake_name="${user}-wsl"
+else
+  flake_name="${user}"
+fi
+flake_attr="${NIX_DIR}#homeConfigurations.${flake_name}.activationPackage"
 
 # 変数の表示
 log_debug "SCRIPT_DIR: ${SCRIPT_DIR}"
 log_debug "DOTFILES_DIR: ${DOTFILES_DIR}"
 log_debug "NIX_DIR: ${NIX_DIR}"
 log_debug "USER: ${user}"
+log_debug "FLAKE_NAME: ${flake_name}"
 log_debug "LIX: ${nix_version}"
 
 if [[ "${update}" == "true" ]]; then

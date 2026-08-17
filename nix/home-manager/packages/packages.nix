@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, isWsl, ... }:
 
 {
   imports = [
@@ -12,7 +12,6 @@
     gh
     curl
     wget
-    wsl2-ssh-agent
     nh
     eclint
     jq
@@ -35,8 +34,12 @@
     # AWS
     awscli2
     aws-vault
+  ] ++ lib.optionals isWsl [
+    wsl2-ssh-agent
   ];
 
-  # シンボリックリンクを貼っておく
-  home.file.".ssh/wsl2-ssh-agent".source = "${pkgs.wsl2-ssh-agent}/bin/wsl2-ssh-agent";
+  # WSL では Windows 側の SSH エージェント連携用のシンボリックリンクを貼っておく
+  home.file = lib.optionalAttrs isWsl {
+    ".ssh/wsl2-ssh-agent".source = "${pkgs.wsl2-ssh-agent}/bin/wsl2-ssh-agent";
+  };
 }

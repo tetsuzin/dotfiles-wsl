@@ -29,14 +29,18 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       user = "tetsuzin";
+      mkHome =
+        isWsl:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [ ./home-manager/_main.nix ];
+          extraSpecialArgs = {
+            inherit user ezaThemes lazyvimStarter isWsl;
+          };
+        };
     in
     {
-      homeConfigurations.${user} = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [ ./home-manager/_main.nix ];
-        extraSpecialArgs = {
-          inherit user ezaThemes lazyvimStarter;
-        };
-      };
+      homeConfigurations.${user} = mkHome false;
+      homeConfigurations."${user}-wsl" = mkHome true;
     };
 }

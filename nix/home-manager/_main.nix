@@ -1,4 +1,4 @@
-{ config, user, pkgs, ezaThemes, lazyvimStarter, ... }:
+{ config, lib, user, pkgs, ezaThemes, lazyvimStarter, isWsl, ... }:
 
 let
   dotfilesDir = ../../dotfiles/HOME;
@@ -13,8 +13,8 @@ in {
   home.stateVersion = "26.05";
   home.homeDirectory = "/home/${user}";
 
-  home.file = {
-    # ホスト側のファイルとディレクトリにパスを貼る
+  # WSL では Windows ホスト側のファイルにパスを貼る
+  home.file = lib.optionalAttrs isWsl {
     ".aws/credentials".source = mkLink "${wslHostDir}/.aws/credentials";
     ".kube/config".source = mkLink "${wslHostDir}/.kube/config";
   };
