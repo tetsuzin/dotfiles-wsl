@@ -1,3 +1,4 @@
 .idea/
+/os/
 .DS_Store
 **/.ssh/config

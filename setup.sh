@@ -4,11 +4,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 RED=$'\033[0;31m'
+YELLOW=$'\033[1;33m'
 GREEN=$'\033[0;32m'
 NC=$'\033[0m'
 
 function log_info() {
   printf '%s[INFO ]%s %s\n' "${GREEN}" "${NC}" "$*"
+}
+
+function log_warning() {
+  printf '%s[WARN ]%s %s\n' "${YELLOW}" "${NC}" "$*" >&2
 }
 
 function fail() {
@@ -45,8 +50,15 @@ esac
 case "${command}" in
   prepare | switch)
     log_info "OS: ${os_name}"
-    git -C "${SCRIPT_DIR}" submodule update --init "os/${os_name}"
-    exec "${SCRIPT_DIR}/os/${os_name}/scripts/${command}.sh" "$@"
+    os_dir="${SCRIPT_DIR}/os/${os_name}"
+    os_repo="https://github.com/tetsuzin/dotfiles-${os_name}.git"
+    if [[ ! -e "${os_dir}/.git" ]]; then
+      log_info "${os_repo} を clone します"
+      git clone "${os_repo}" "${os_dir}"
+    elif ! git -C "${os_dir}" pull --ff-only; then
+      log_warning "os/${os_name} を更新できませんでした。現在の内容のまま続行します"
+    fi
+    exec "${os_dir}/scripts/${command}.sh" "$@"
     ;;
   -h | --help)
     usage
