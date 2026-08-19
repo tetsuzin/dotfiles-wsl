@@ -1,7 +1,6 @@
 { config, lib, user, pkgs, lazyvimStarter, isWsl, ... }:
 
 let
-  dotfilesDir = ../../dotfiles/linux/HOME;
   wslHostDir = "/mnt/c/Users/${user}";
   mkLink = config.lib.file.mkOutOfStoreSymlink;
 in {
@@ -25,7 +24,7 @@ in {
   programs.bash = {
     enable = true;
     enableCompletion = true;
-    initExtra = builtins.readFile "${dotfilesDir}/.bashrc_base" + ''
+    initExtra = builtins.readFile ../../dotfiles/linux/bashrc_base + ''
 
       # mise を有効化
       eval "$(${pkgs.mise}/bin/mise activate bash)"

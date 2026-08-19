@@ -27,13 +27,11 @@ in
   home.activation = {
     installKrewPlugins = config.lib.dag.entryAfter [ "writeBoundary" ] ''
       KREW_BIN="${pkgs.krew}/bin/krew"
-      if [ -f "$KREW_BIN" ]; then
-        for plugin in ${toString krewPlugins}; do
-          if ! "$KREW_BIN" list 2>/dev/null | grep -q "^$plugin$"; then
-            $DRY_RUN_CMD "$KREW_BIN" install "$plugin"
-          fi
-        done
-      fi
+      for plugin in ${toString krewPlugins}; do
+        if ! "$KREW_BIN" list 2>/dev/null | grep -q "^$plugin$"; then
+          $DRY_RUN_CMD "$KREW_BIN" install "$plugin"
+        fi
+      done
     '';
   };
 }
