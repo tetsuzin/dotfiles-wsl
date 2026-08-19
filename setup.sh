@@ -2,24 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-RED=$'\033[0;31m'
-YELLOW=$'\033[1;33m'
-GREEN=$'\033[0;32m'
-NC=$'\033[0m'
-
-function log_info() {
-  printf '%s[INFO ]%s %s\n' "${GREEN}" "${NC}" "$*"
-}
-
-function log_warning() {
-  printf '%s[WARN ]%s %s\n' "${YELLOW}" "${NC}" "$*" >&2
-}
-
-function fail() {
-  printf '%s[ERROR]%s %s\n' "${RED}" "${NC}" "$*" >&2
-  exit 1
-}
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/scripts/_functions"
 
 function usage() {
   cat <<'EOF'
